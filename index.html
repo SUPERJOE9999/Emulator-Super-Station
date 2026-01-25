@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emulator Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .console-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .console-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .console-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+        }
+
+        .console-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .console-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .console-year {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .console-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Emulator Hub 🎮</h1>
+        <div id="consoleContainer" class="console-grid"></div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONSOLE CONFIGURATION
+        // ============================================
+        // Set URL to "none" to hide the console
+        // Set URL to a web link to display and enable the console
+        
+        const consoles = [
+            // ============================================
+            // NINTENDO CONSOLES
+            // ============================================
+            {
+                name: "NES",
+                fullName: "Nintendo Entertainment System",
+                year: "1983",
+                icon: "🕹️",
+                url: "none"
+            },
+            {
+                name: "SNES",
+                fullName: "Super Nintendo",
+                year: "1990",
+                icon: "🎮",
+                url: "none"
+            },
+            {
+                name: "N64",
+                fullName: "Nintendo 64",
+                year: "1996",
+                icon: "🎮",
+                url: "none"
+            },
+            {
+                name: "GameCube",
+                fullName: "Nintendo GameCube",
+                year: "2001",
+                icon: "🎮",
+                url: "none"
+            },
+            {
+                name: "Wii",
+                fullName: "Nintendo Wii",
+                year: "2006",
+                icon: "🎮",
+                url: "none"
+            },
+            {
+                name: "Wii U",
+                fullName: "Nintendo Wii U",
+                year: "2012",
+                icon: "🎮",
+                url: "none"
+            },
+            {
+                name: "Switch",
+                fullName: "Nintendo Switch",
+                year: "2017",
+                icon: "🎮",
+                url: "none"
+            },
+
+            // ============================================
+            // NINTENDO HANDHELD
+            // ============================================
+            {
+                name: "Game Boy",
+                fullName: "Nintendo Game Boy",
+                year: "1989",
+                icon: "📱",
+                url: "none"
+            },
+            {
+                name: "Game Boy Color",
+                fullName: "Nintendo Game Boy Color",
+                year: "1998",
+                icon: "📱",
+                url: "none"
+            },
+            {
+                name: "Game Boy Advance",
+                fullName: "Nintendo Game Boy Advance",
+                year: "2001",
+                icon: "📱",
+                url: "https://superjoe9999.github.io/gbahost/"
+            },
+            {
+                name: "Nintendo DS",
+                fullName: "Nintendo DS",
+                year: "2004",
+                icon: "📱",
+                url: "none"
+            },
+            {
+                name: "Nintendo 3DS",
+                fullName: "Nintendo 3DS",
+                year: "2011",
+                icon: "📱",
+                url: "none"
+            },
+
+            // ============================================
+            // SONY PLAYSTATION
+            // ============================================
+            {
+                name: "PlayStation",
+                fullName: "Sony PlayStation",
+                year: "1994",
+                icon: "🎯",
+                url: "none"
+            },
+            {
+                name: "PlayStation 2",
+                fullName: "Sony PlayStation 2",
+                year: "2000",
+                icon: "🎯",
+                url: "none"
+            },
+            {
+                name: "PlayStation 3",
+                fullName: "Sony PlayStation 3",
+                year: "2006",
+                icon: "🎯",
+                url: "none"
+            },
+            {
+                name: "PlayStation 4",
+                fullName: "Sony PlayStation 4",
+                year: "2013",
+                icon: "🎯",
+                url: "none"
+            },
+            {
+                name: "PlayStation 5",
+                fullName: "Sony PlayStation 5",
+                year: "2020",
+                icon: "🎯",
+                url: "none"
+            },
+
+            // ============================================
+            // SONY HANDHELD
+            // ============================================
+            {
+                name: "PSP",
+                fullName: "PlayStation Portable",
+                year: "2004",
+                icon: "📱",
+                url: "none"
+            },
+            {
+                name: "PS Vita",
+                fullName: "PlayStation Vita",
+                year: "2011",
+                icon: "📱",
+                url: "none"
+            },
+
+            // ============================================
+            // MICROSOFT XBOX
+            // ============================================
+            {
+                name: "Xbox",
+                fullName: "Microsoft Xbox",
+                year: "2001",
+                icon: "❎",
+                url: "none"
+            },
+            {
+                name: "Xbox 360",
+                fullName: "Microsoft Xbox 360",
+                year: "2005",
+                icon: "❎",
+                url: "none"
+            },
+            {
+                name: "Xbox One",
+                fullName: "Microsoft Xbox One",
+                year: "2013",
+                icon: "❎",
+                url: "none"
+            },
+            {
+                name: "Xbox Series X/S",
+                fullName: "Microsoft Xbox Series X/S",
+                year: "2020",
+                icon: "❎",
+                url: "none"
+            },
+
+            // ============================================
+            // SEGA CONSOLES
+            // ============================================
+            {
+                name: "Master System",
+                fullName: "Sega Master System",
+                year: "1985",
+                icon: "🎮",
+                url: "none"
+            },
+            {
+                name: "Genesis",
+                fullName: "Sega Genesis / Mega Drive",
+                year: "1988",
+                icon: "🎮",
+                url: "none"
+            },
+            {
+                name: "Sega CD",
+                fullName: "Sega CD / Mega CD",
+                year: "1991",
+                icon: "💿",
+                url: "none"
+            },
+            {
+                name: "32X",
+                fullName: "Sega 32X",
+                year: "1994",
+                icon: "🎮",
+                url: "none"
+            },
+            {
+                name: "Saturn",
+                fullName: "Sega Saturn",
+                year: "1994",
+                icon: "🪐",
+                url: "none"
+            },
+            {
+                name: "Dreamcast",
+                fullName: "Sega Dreamcast",
+                year: "1998",
+                icon: "🌀",
+                url: "none"
+            },
+
+            // ============================================
+            // SEGA HANDHELD
+            // ============================================
+            {
+                name: "Game Gear",
+                fullName: "Sega Game Gear",
+                year: "1990",
+                icon: "📱",
+                url: "none"
+            },
+
+            // ============================================
+            // ATARI CONSOLES
+            // ============================================
+            {
+                name: "Atari 2600",
+                fullName: "Atari 2600",
+                year: "1977",
+                icon: "👾",
+                url: "none"
+            },
+            {
+                name: "Atari 5200",
+                fullName: "Atari 5200",
+                year: "1982",
+                icon: "👾",
+                url: "none"
+            },
+            {
+                name: "Atari 7800",
+                fullName: "Atari 7800",
+                year: "1986",
+                icon: "👾",
+                url: "none"
+            },
+            {
+                name: "Atari Jaguar",
+                fullName: "Atari Jaguar",
+                year: "1993",
+                icon: "🐆",
+                url: "none"
+            },
+            {
+                name: "Atari Lynx",
+                fullName: "Atari Lynx",
+                year: "1989",
+                icon: "📱",
+                url: "none"
+            },
+
+            // ============================================
+            // OTHER CONSOLES
+            // ============================================
+            {
+                name: "Neo Geo",
+                fullName: "SNK Neo Geo",
+                year: "1990",
+                icon: "🎮",
+                url: "none"
+            },
+            {
+                name: "Neo Geo Pocket",
+                fullName: "SNK Neo Geo Pocket",
+                year: "1998",
+                icon: "📱",
+                url: "none"
+            },
+            {
+                name: "TurboGrafx-16",
+                fullName: "NEC TurboGrafx-16",
+                year: "1987",
+                icon: "🎮",
+                url: "none"
+            },
+            {
+                name: "3DO",
+                fullName: "3DO Interactive",
+                year: "1993",
+                icon: "🎮",
+                url: "none"
+            },
+            {
+                name: "ColecoVision",
+                fullName: "ColecoVision",
+                year: "1982",
+                icon: "🎮",
+                url: "none"
+            },
+            {
+                name: "Intellivision",
+                fullName: "Intellivision",
+                year: "1979",
+                icon: "🎮",
+                url: "none"
+            },
+            {
+                name: "Vectrex",
+                fullName: "Vectrex",
+                year: "1982",
+                icon: "📺",
+                url: "none"
+            },
+            {
+                name: "WonderSwan",
+                fullName: "Bandai WonderSwan",
+                year: "1999",
+                icon: "📱",
+                url: "none"
+            },
+
+            // ============================================
+            // ARCADE
+            // ============================================
+            {
+                name: "Arcade",
+                fullName: "Arcade Games (MAME)",
+                year: "Various",
+                icon: "🕹️",
+                url: "none"
+            },
+
+            // ============================================
+            // COMPUTER SYSTEMS
+            // ============================================
+            {
+                name: "DOS",
+                fullName: "MS-DOS",
+                year: "1981",
+                icon: "💻",
+                url: "none"
+            },
+            {
+                name: "Commodore 64",
+                fullName: "Commodore 64",
+                year: "1982",
+                icon: "💻",
+                url: "none"
+            },
+            {
+                name: "Amiga",
+                fullName: "Commodore Amiga",
+                year: "1985",
+                icon: "💻",
+                url: "none"
+            },
+            {
+                name: "ZX Spectrum",
+                fullName: "Sinclair ZX Spectrum",
+                year: "1982",
+                icon: "💻",
+                url: "none"
+            }
+        ];
+
+        // ============================================
+        // RENDER CONSOLES
+        // ============================================
+        function renderConsoles() {
+            const container = document.getElementById('consoleContainer');
+            container.innerHTML = '';
+
+            consoles.forEach(console => {
+                // Only display if URL is not "none"
+                if (console.url.toLowerCase() !== "none") {
+                    const card = document.createElement('div');
+                    card.className = 'console-card';
+                    card.innerHTML = `
+                        <div class="console-icon">${console.icon}</div>
+                        <div class="console-name">${console.name}</div>
+                        <div class="console-year">${console.year}</div>
+                    `;
+                    
+                    card.addEventListener('click', () => {
+                        window.open(console.url, '_blank');
+                    });
+                    
+                    container.appendChild(card);
+                }
+            });
+
+            // Show message if no consoles are available
+            if (container.children.length === 0) {
+                container.innerHTML = '<p style="color: white; text-align: center; grid-column: 1/-1; font-size: 1.2em;">No emulators configured yet. Add URLs to console entries to enable them.</p>';
+            }
+        }
+
+        // Initialize
+        renderConsoles();
+    </script>
+</body>
+</html>
