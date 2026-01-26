@@ -3,864 +3,250 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emulator Hub</title>
+    <title>Emulator Hub | Nexus v2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg: #050508;
+            --panel: rgba(15, 15, 20, 0.9);
+            --accent: #00f2ff;
+            --snes-grey: #d1d1e0;
+            --snes-purple: #7a7ab8;
+            --snes-dark-purple: #515191;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(0, 242, 255, 0.05) 0%, transparent 80%),
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            color: white;
+            font-family: 'Outfit', sans-serif;
             min-height: 100vh;
-            padding: 30px 20px;
+            padding: 60px 20px;
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        header {
+            text-align: center;
+            margin-bottom: 80px;
         }
 
         h1 {
-            text-align: center;
-            color: white;
-            margin-bottom: 50px;
-            font-size: 3em;
-            text-shadow: 0 0 20px rgba(255,255,255,0.5), 0 0 40px rgba(100,150,255,0.3);
-            letter-spacing: 3px;
-            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            letter-spacing: -3px;
+            background: linear-gradient(to bottom, #fff 50%, #444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
         }
 
-        .console-grid {
+        .status-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: rgba(0, 242, 255, 0.05);
+            border: 1px solid var(--accent);
+            border-radius: 100px;
+            font-size: 0.7rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .pulse {
+            width: 6px; height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 40px;
         }
 
-        .console-card {
-            position: relative;
-            border-radius: 20px;
-            padding: 30px 20px;
+        /* --- THE CARD --- */
+        .card {
+            background: var(--panel);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 40px;
+            padding: 50px 30px;
             text-align: center;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
             cursor: pointer;
-            transition: all 0.4s ease;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-
-        .console-card::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, rgba(255,255,255,0.1), transparent);
-            border-radius: 20px;
-            z-index: 0;
-        }
-
-        .console-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-
-        .console-body {
-            position: relative;
-            z-index: 1;
-        }
-
-        .console-design {
-            width: 140px;
-            height: 100px;
-            margin: 0 auto 20px;
             position: relative;
         }
 
-        .console-name {
-            font-size: 1.3em;
-            font-weight: bold;
-            margin-bottom: 8px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        .card:hover {
+            transform: translateY(-20px);
+            border-color: var(--accent);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 30px rgba(0, 242, 255, 0.1);
         }
 
-        .console-year {
-            font-size: 0.9em;
-            opacity: 0.8;
+        /* --- SNES CONTROLLER ART --- */
+        .art-stage {
+            height: 160px;
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* Nintendo Consoles - Red theme */
-        .nintendo {
-            background: linear-gradient(135deg, #e60012 0%, #ff4444 100%);
-            color: white;
+        .snes-controller {
+            width: 150px; height: 70px;
+            background: var(--snes-grey);
+            border-radius: 35px; /* Pill shape */
+            position: relative;
+            box-shadow: 0 8px 0 #999, inset 0 -4px 0 rgba(0,0,0,0.1);
         }
 
-        .nintendo .console-design {
-            background: linear-gradient(135deg, #c9000d 0%, #e60012 100%);
-            border-radius: 12px;
-            box-shadow: inset 0 -4px 8px rgba(0,0,0,0.3), 0 4px 12px rgba(230,0,18,0.4);
-        }
-
-        .nintendo .console-design::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 40px;
-            height: 40px;
-            background: white;
-            border-radius: 50%;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-
-        /* SNES variant */
-        .snes {
-            background: linear-gradient(135deg, #8b8b99 0%, #b8b8c8 100%);
-            color: white;
-        }
-
-        .snes .console-design {
-            background: linear-gradient(135deg, #7a7a88 0%, #9090a0 100%);
-            border-radius: 25px 25px 15px 15px;
-            box-shadow: inset 0 -4px 8px rgba(0,0,0,0.3);
-        }
-
-        /* N64 variant */
-        .n64 {
-            background: linear-gradient(135deg, #2d2d2d 0%, #4a4a4a 100%);
-            color: white;
-        }
-
-        .n64 .console-design {
-            background: linear-gradient(135deg, #1a1a1a 0%, #3d3d3d 100%);
-            border-radius: 8px;
-        }
-
-        /* GameCube variant */
-        .gamecube {
-            background: linear-gradient(135deg, #5b40b8 0%, #7b60d8 100%);
-            color: white;
-        }
-
-        .gamecube .console-design {
-            background: linear-gradient(135deg, #4b30a8 0%, #6b50c8 100%);
-            border-radius: 5px;
-            transform: perspective(200px) rotateY(-10deg);
-        }
-
-        /* Nintendo Handhelds - Teal/Gray theme */
-        .nintendo-handheld {
-            background: linear-gradient(135deg, #8f8f8f 0%, #b0b0b0 100%);
-            color: #333;
-        }
-
-        .nintendo-handheld .console-design {
-            background: linear-gradient(135deg, #7a7a7a 0%, #9a9a9a 100%);
-            border-radius: 15px;
-            box-shadow: inset 0 -4px 8px rgba(0,0,0,0.2);
-        }
-
-        .nintendo-handheld .console-design::before {
-            content: '';
-            position: absolute;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 50px;
-            background: linear-gradient(135deg, #2d4a2e 0%, #3d5a3e 100%);
-            border-radius: 5px;
-        }
-
-        /* PlayStation - Blue theme */
-        .playstation {
-            background: linear-gradient(135deg, #003087 0%, #0051ba 100%);
-            color: white;
-        }
-
-        .playstation .console-design {
-            background: linear-gradient(135deg, #002266 0%, #003d99 100%);
-            border-radius: 8px;
-            box-shadow: inset 0 -4px 8px rgba(0,0,0,0.3), 0 4px 12px rgba(0,48,135,0.4);
-        }
-
-        .playstation .console-design::after {
-            content: '◯ × □ △';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 18px;
-            color: rgba(255,255,255,0.3);
-            letter-spacing: 5px;
-        }
-
-        /* PSP/Vita - Black theme */
-        .psp {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            color: white;
-        }
-
-        .psp .console-design {
-            background: linear-gradient(135deg, #0a0a0a 0%, #1d1d1d 100%);
-            border-radius: 25px;
-            box-shadow: inset 0 2px 8px rgba(255,255,255,0.1);
-        }
-
-        .psp .console-design::before {
-            content: '';
-            position: absolute;
-            top: 20px;
-            left: 15px;
-            right: 15px;
-            height: 40px;
-            background: linear-gradient(135deg, #003087 0%, #0051ba 100%);
-            border-radius: 3px;
-        }
-
-        /* Xbox - Green theme */
-        .xbox {
-            background: linear-gradient(135deg, #107c10 0%, #13a313 100%);
-            color: white;
-        }
-
-        .xbox .console-design {
-            background: linear-gradient(135deg, #0e6b0e 0%, #108c10 100%);
-            border-radius: 10px;
-            box-shadow: inset 0 -4px 8px rgba(0,0,0,0.3), 0 4px 12px rgba(16,124,16,0.4);
-        }
-
-        .xbox .console-design::after {
-            content: 'X';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 50px;
-            font-weight: bold;
-            color: rgba(255,255,255,0.2);
-        }
-
-        /* Sega - Blue/Black theme */
-        .sega {
-            background: linear-gradient(135deg, #0066cc 0%, #0088ff 100%);
-            color: white;
-        }
-
-        .sega .console-design {
-            background: linear-gradient(135deg, #0052a3 0%, #0066cc 100%);
-            border-radius: 12px;
-            box-shadow: inset 0 -4px 8px rgba(0,0,0,0.3);
-        }
-
-        /* Sega Genesis variant */
-        .genesis {
-            background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
-            color: white;
-        }
-
-        .genesis .console-design {
-            background: linear-gradient(135deg, #0a0a0a 0%, #1d1d1d 100%);
-            border-radius: 8px;
-        }
-
-        .genesis .console-design::before {
-            content: '';
-            position: absolute;
-            top: 30%;
-            left: 20%;
-            right: 20%;
-            height: 3px;
-            background: #ff0000;
-        }
-
-        /* Dreamcast variant */
-        .dreamcast {
-            background: linear-gradient(135deg, #e8e8e8 0%, #ffffff 100%);
-            color: #333;
-        }
-
-        .dreamcast .console-design {
-            background: linear-gradient(135deg, #d0d0d0 0%, #f0f0f0 100%);
-            border-radius: 50%;
-            box-shadow: inset 0 -4px 8px rgba(0,0,0,0.1);
-        }
-
-        .dreamcast .console-design::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 20px;
-            height: 20px;
-            background: #ff6600;
-            border-radius: 50%;
-        }
-
-        /* Atari - Wood grain theme */
-        .atari {
-            background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);
-            color: white;
-        }
-
-        .atari .console-design {
-            background: linear-gradient(135deg, #6b3410 0%, #8b4513 100%);
-            border-radius: 8px;
-            box-shadow: inset 0 -4px 8px rgba(0,0,0,0.3);
-        }
-
-        .atari .console-design::before {
-            content: '';
-            position: absolute;
-            top: 20%;
-            left: 10%;
-            right: 10%;
-            height: 25%;
-            background: linear-gradient(90deg, #2a2a2a 0%, #3a3a3a 100%);
-            border-radius: 3px;
-        }
-
-        /* Neo Geo - Yellow/Red theme */
-        .neogeo {
-            background: linear-gradient(135deg, #ff9900 0%, #ffbb33 100%);
-            color: #333;
-        }
-
-        .neogeo .console-design {
-            background: linear-gradient(135deg, #dd7700 0%, #ff9900 100%);
-            border-radius: 8px;
-        }
-
-        .neogeo .console-design::after {
-            content: 'NEO•GEO';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 12px;
-            font-weight: bold;
-            color: rgba(0,0,0,0.3);
-        }
-
-        /* Arcade - Colorful theme */
-        .arcade {
-            background: linear-gradient(135deg, #ff006e 0%, #8338ec 50%, #3a86ff 100%);
-            color: white;
-        }
-
-        .arcade .console-design {
-            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
-            border-radius: 12px 12px 4px 4px;
-        }
-
-        .arcade .console-design::before {
-            content: '';
-            position: absolute;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 70px;
-            height: 50px;
-            background: linear-gradient(135deg, #001f3f 0%, #003366 100%);
-            border-radius: 5px;
-            box-shadow: inset 0 2px 8px rgba(100,200,255,0.3);
-        }
-
-        /* Computer - Gray theme */
-        .computer {
-            background: linear-gradient(135deg, #5a5a5a 0%, #7a7a7a 100%);
-            color: white;
-        }
-
-        .computer .console-design {
-            background: linear-gradient(135deg, #4a4a4a 0%, #6a6a6a 100%);
-            border-radius: 5px;
-        }
-
-        .computer .console-design::before {
-            content: '';
-            position: absolute;
-            top: 25%;
-            left: 20%;
-            right: 20%;
-            height: 50%;
-            background: linear-gradient(135deg, #1a3a1a 0%, #2a4a2a 100%);
+        /* D-Pad */
+        .snes-controller::before {
+            content: ''; position: absolute; top: 22px; left: 20px;
+            width: 26px; height: 26px;
+            background: 
+                linear-gradient(90deg, transparent 38%, #444 38%, #444 62%, transparent 62%),
+                linear-gradient(transparent 38%, #444 38%, #444 62%, transparent 62%);
             border-radius: 2px;
         }
 
-        /* Other consoles - Purple theme */
-        .other {
-            background: linear-gradient(135deg, #6a4c93 0%, #8b6fb8 100%);
-            color: white;
+        /* Buttons (Diamond Layout) */
+        .buttons-group {
+            position: absolute; right: 20px; top: 15px;
+            width: 40px; height: 40px;
+            background: #bbb; border-radius: 50%; /* Indent area */
         }
 
-        .other .console-design {
-            background: linear-gradient(135deg, #5a3c83 0%, #7a5ca8 100%);
-            border-radius: 10px;
+        .btn {
+            position: absolute; width: 12px; height: 12px;
+            border-radius: 50%; background: var(--snes-purple);
+            box-shadow: 0 2px 0 var(--snes-dark-purple);
+        }
+        .btn.top { top: 2px; left: 14px; }
+        .btn.bottom { bottom: 2px; left: 14px; }
+        .btn.left { top: 14px; left: 2px; }
+        .btn.right { top: 14px; right: 2px; }
+
+        /* Start / Select */
+        .center-btns {
+            position: absolute; bottom: 18px; left: 50%;
+            transform: translateX(-50%);
+            width: 30px; height: 6px;
+            display: flex; gap: 8px;
+        }
+        .pill { width: 12px; height: 4px; background: #888; border-radius: 10px; transform: rotate(-25deg); }
+
+        /* --- HANDHELD ART --- */
+        .gb-model {
+            width: 70px; height: 110px;
+            background: #4b0082; border-radius: 8px 8px 30px 8px;
+            position: relative;
+        }
+        .gb-model::after {
+            content: ''; position: absolute; top: 10px; left: 10px;
+            width: 50px; height: 45px; background: #2d4a2e; border: 3px solid #111;
         }
 
-        .hidden {
-            display: none;
+        /* INFO */
+        .name { font-size: 2rem; font-weight: 700; letter-spacing: -1px; margin-bottom: 8px; }
+        .year { font-size: 0.85rem; color: #555; text-transform: uppercase; letter-spacing: 2px; }
+
+        .launch-label {
+            margin-top: 30px;
+            font-size: 0.65rem;
+            color: var(--accent);
+            opacity: 0;
+            transition: 0.3s;
+            letter-spacing: 3px;
         }
+        .card:hover .launch-label { opacity: 1; }
 
-        @media (max-width: 768px) {
-            .console-grid {
-                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-                gap: 20px;
-            }
-            
-            h1 {
-                font-size: 2em;
-                margin-bottom: 30px;
-            }
-
-            .console-card {
-                padding: 20px 15px;
-            }
-
-            .console-design {
-                width: 100px;
-                height: 80px;
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎮 Emulator Hub 🎮</h1>
-        <div id="consoleContainer" class="console-grid"></div>
-    </div>
 
-    <script>
-        // ============================================
-        // CONSOLE CONFIGURATION
-        // ============================================
-        // Set URL to "none" to hide the console
-        // Set URL to a web link to display and enable the console
-        
-        const consoles = [
-            // ============================================
-            // NINTENDO CONSOLES
-            // ============================================
-            {
-                name: "NES",
-                fullName: "Nintendo Entertainment System",
-                year: "1983",
-                cssClass: "nintendo",
-                url: "none"
-            },
-            {
-                name: "SNES",
-                fullName: "Super Nintendo",
-                year: "1990",
-                cssClass: "snes",
-                url: "https://superjoe9999.github.io/Snes-emulator-html/"
-            },
-            {
-                name: "N64",
-                fullName: "Nintendo 64",
-                year: "1996",
-                cssClass: "n64",
-                url: "none"
-            },
-            {
-                name: "GameCube",
-                fullName: "Nintendo GameCube",
-                year: "2001",
-                cssClass: "gamecube",
-                url: "none"
-            },
-            {
-                name: "Wii",
-                fullName: "Nintendo Wii",
-                year: "2006",
-                cssClass: "nintendo",
-                url: "none"
-            },
-            {
-                name: "Wii U",
-                fullName: "Nintendo Wii U",
-                year: "2012",
-                cssClass: "nintendo",
-                url: "none"
-            },
-            {
-                name: "Switch",
-                fullName: "Nintendo Switch",
-                year: "2017",
-                cssClass: "nintendo",
-                url: "none"
-            },
+<div class="container">
+    <header>
+        <div class="status-chip"><div class="pulse"></div> System Ready</div>
+        <h1>Emulator Hub</h1>
+    </header>
 
-            // ============================================
-            // NINTENDO HANDHELD
-            // ============================================
-            {
-                name: "Game Boy",
-                fullName: "Nintendo Game Boy",
-                year: "1989",
-                cssClass: "nintendo-handheld",
-                url: "none"
-            },
-            {
-                name: "Game Boy Color",
-                fullName: "Nintendo Game Boy Color",
-                year: "1998",
-                cssClass: "nintendo-handheld",
-                url: "https://superjoe9999.github.io/Gameboy-color-emulator-/"
-            },
-            {
-                name: "Game Boy Advance",
-                fullName: "Nintendo Game Boy Advance",
-                year: "2001",
-                cssClass: "nintendo-handheld",
-                url: "https://superjoe9999.github.io/gbahost/"
-            },
-            {
-                name: "Nintendo DS",
-                fullName: "Nintendo DS",
-                year: "2004",
-                cssClass: "nintendo-handheld",
-                url: "none"
-            },
-            {
-                name: "Nintendo 3DS",
-                fullName: "Nintendo 3DS",
-                year: "2011",
-                cssClass: "nintendo-handheld",
-                url: "none"
-            },
+    <div id="nexus" class="grid"></div>
+</div>
 
-            // ============================================
-            // SONY PLAYSTATION
-            // ============================================
-            {
-                name: "PlayStation",
-                fullName: "Sony PlayStation",
-                year: "1994",
-                cssClass: "playstation",
-                url: "none"
-            },
-            {
-                name: "PlayStation 2",
-                fullName: "Sony PlayStation 2",
-                year: "2000",
-                cssClass: "playstation",
-                url: "none"
-            },
-            {
-                name: "PlayStation 3",
-                fullName: "Sony PlayStation 3",
-                year: "2006",
-                cssClass: "playstation",
-                url: "none"
-            },
-            {
-                name: "PlayStation 4",
-                fullName: "Sony PlayStation 4",
-                year: "2013",
-                cssClass: "playstation",
-                url: "none"
-            },
-            {
-                name: "PlayStation 5",
-                fullName: "Sony PlayStation 5",
-                year: "2020",
-                cssClass: "playstation",
-                url: "none"
-            },
-
-            // ============================================
-            // SONY HANDHELD
-            // ============================================
-            {
-                name: "PSP",
-                fullName: "PlayStation Portable",
-                year: "2004",
-                cssClass: "psp",
-                url: "none"
-            },
-            {
-                name: "PS Vita",
-                fullName: "PlayStation Vita",
-                year: "2011",
-                cssClass: "psp",
-                url: "none"
-            },
-
-            // ============================================
-            // MICROSOFT XBOX
-            // ============================================
-            {
-                name: "Xbox",
-                fullName: "Microsoft Xbox",
-                year: "2001",
-                cssClass: "xbox",
-                url: "none"
-            },
-            {
-                name: "Xbox 360",
-                fullName: "Microsoft Xbox 360",
-                year: "2005",
-                cssClass: "xbox",
-                url: "none"
-            },
-            {
-                name: "Xbox One",
-                fullName: "Microsoft Xbox One",
-                year: "2013",
-                cssClass: "xbox",
-                url: "none"
-            },
-            {
-                name: "Xbox Series X/S",
-                fullName: "Microsoft Xbox Series X/S",
-                year: "2020",
-                cssClass: "xbox",
-                url: "none"
-            },
-
-            // ============================================
-            // SEGA CONSOLES
-            // ============================================
-            {
-                name: "Master System",
-                fullName: "Sega Master System",
-                year: "1985",
-                cssClass: "sega",
-                url: "none"
-            },
-            {
-                name: "Genesis",
-                fullName: "Sega Genesis / Mega Drive",
-                year: "1988",
-                cssClass: "genesis",
-                url: "none"
-            },
-            {
-                name: "Sega CD",
-                fullName: "Sega CD / Mega CD",
-                year: "1991",
-                cssClass: "sega",
-                url: "none"
-            },
-            {
-                name: "32X",
-                fullName: "Sega 32X",
-                year: "1994",
-                cssClass: "genesis",
-                url: "none"
-            },
-            {
-                name: "Saturn",
-                fullName: "Sega Saturn",
-                year: "1994",
-                cssClass: "sega",
-                url: "none"
-            },
-            {
-                name: "Dreamcast",
-                fullName: "Sega Dreamcast",
-                year: "1998",
-                cssClass: "dreamcast",
-                url: "none"
-            },
-
-            // ============================================
-            // SEGA HANDHELD
-            // ============================================
-            {
-                name: "Game Gear",
-                fullName: "Sega Game Gear",
-                year: "1990",
-                cssClass: "sega",
-                url: "none"
-            },
-
-            // ============================================
-            // ATARI CONSOLES
-            // ============================================
-            {
-                name: "Atari 2600",
-                fullName: "Atari 2600",
-                year: "1977",
-                cssClass: "atari",
-                url: "none"
-            },
-            {
-                name: "Atari 5200",
-                fullName: "Atari 5200",
-                year: "1982",
-                cssClass: "atari",
-                url: "none"
-            },
-            {
-                name: "Atari 7800",
-                fullName: "Atari 7800",
-                year: "1986",
-                cssClass: "atari",
-                url: "none"
-            },
-            {
-                name: "Atari Jaguar",
-                fullName: "Atari Jaguar",
-                year: "1993",
-                cssClass: "atari",
-                url: "none"
-            },
-            {
-                name: "Atari Lynx",
-                fullName: "Atari Lynx",
-                year: "1989",
-                cssClass: "atari",
-                url: "none"
-            },
-
-            // ============================================
-            // OTHER CONSOLES
-            // ============================================
-            {
-                name: "Neo Geo",
-                fullName: "SNK Neo Geo",
-                year: "1990",
-                cssClass: "neogeo",
-                url: "none"
-            },
-            {
-                name: "Neo Geo Pocket",
-                fullName: "SNK Neo Geo Pocket",
-                year: "1998",
-                cssClass: "neogeo",
-                url: "none"
-            },
-            {
-                name: "TurboGrafx-16",
-                fullName: "NEC TurboGrafx-16",
-                year: "1987",
-                cssClass: "other",
-                url: "none"
-            },
-            {
-                name: "3DO",
-                fullName: "3DO Interactive",
-                year: "1993",
-                cssClass: "other",
-                url: "none"
-            },
-            {
-                name: "ColecoVision",
-                fullName: "ColecoVision",
-                year: "1982",
-                cssClass: "other",
-                url: "none"
-            },
-            {
-                name: "Intellivision",
-                fullName: "Intellivision",
-                year: "1979",
-                cssClass: "other",
-                url: "none"
-            },
-            {
-                name: "Vectrex",
-                fullName: "Vectrex",
-                year: "1982",
-                cssClass: "other",
-                url: "none"
-            },
-            {
-                name: "WonderSwan",
-                fullName: "Bandai WonderSwan",
-                year: "1999",
-                cssClass: "other",
-                url: "none"
-            },
-
-            // ============================================
-            // ARCADE
-            // ============================================
-            {
-                name: "Arcade",
-                fullName: "Arcade Games (MAME)",
-                year: "Various",
-                cssClass: "arcade",
-                url: "none"
-            },
-
-            // ============================================
-            // COMPUTER SYSTEMS
-            // ============================================
-            {
-                name: "DOS",
-                fullName: "MS-DOS",
-                year: "1981",
-                cssClass: "computer",
-                url: "none"
-            },
-            {
-                name: "Commodore 64",
-                fullName: "Commodore 64",
-                year: "1982",
-                cssClass: "computer",
-                url: "none"
-            },
-            {
-                name: "Amiga",
-                fullName: "Commodore Amiga",
-                year: "1985",
-                cssClass: "computer",
-                url: "none"
-            },
-            {
-                name: "ZX Spectrum",
-                fullName: "Sinclair ZX Spectrum",
-                year: "1982",
-                cssClass: "computer",
-                url: "none"
-            }
-        ];
-
-        // ============================================
-        // RENDER CONSOLES
-        // ============================================
-        function renderConsoles() {
-            const container = document.getElementById('consoleContainer');
-            container.innerHTML = '';
-
-            consoles.forEach(console => {
-                // Only display if URL is not "none"
-                if (console.url.toLowerCase() !== "none") {
-                    const card = document.createElement('div');
-                    card.className = `console-card ${console.cssClass}`;
-                    card.innerHTML = `
-                        <div class="console-body">
-                            <div class="console-design"></div>
-                            <div class="console-name">${console.name}</div>
-                            <div class="console-year">${console.year}</div>
-                        </div>
-                    `;
-                    
-                    card.addEventListener('click', () => {
-                        window.open(console.url, '_blank');
-                    });
-                    
-                    container.appendChild(card);
-                }
-            });
-
-            // Show message if no consoles are available
-            if (container.children.length === 0) {
-                container.innerHTML = '<p style="color: white; text-align: center; grid-column: 1/-1; font-size: 1.2em; padding: 40px;">No emulators configured yet. Add URLs to console entries to enable them.</p>';
-            }
+<script>
+    // Configuration from your source file
+    const consoles = [
+        { 
+            name: "SNES", 
+            year: "1990", 
+            type: "controller", 
+            url: "https://superjoe9999.github.io/Snes-emulator-html/" 
+        },
+        { 
+            name: "Game Boy Color", 
+            year: "1998", 
+            type: "handheld", 
+            url: "https://superjoe9999.github.io/Gameboy-color-emulator-/" 
+        },
+        { 
+            name: "GBA", 
+            year: "2001", 
+            type: "handheld", 
+            url: "https://superjoe9999.github.io/gbahost/" 
         }
+    ];
 
-        // Initialize
-        renderConsoles();
-    </script>
+    const nexus = document.getElementById('nexus');
+
+    consoles.forEach(c => {
+        if(c.url !== "none") {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.onclick = () => window.open(c.url, '_blank');
+            
+            let artHtml = '';
+            if(c.type === 'controller') {
+                artHtml = `
+                    <div class="snes-controller">
+                        <div class="buttons-group">
+                            <div class="btn top"></div>
+                            <div class="btn bottom"></div>
+                            <div class="btn left"></div>
+                            <div class="btn right"></div>
+                        </div>
+                        <div class="center-btns">
+                            <div class="pill"></div>
+                            <div class="pill"></div>
+                        </div>
+                    </div>`;
+            } else {
+                artHtml = `<div class="gb-model"></div>`;
+            }
+
+            card.innerHTML = `
+                <div class="art-stage">${artHtml}</div>
+                <div class="name">${c.name}</div>
+                <div class="year">${c.year}</div>
+                <div class="launch-label">INITIATING BOOT SEQUENCE...</div>
+            `;
+            nexus.appendChild(card);
+        }
+    });
+</script>
+
 </body>
 </html>
