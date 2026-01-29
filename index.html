@@ -507,50 +507,50 @@
             name: "NES", 
             year: "1983", 
             type: "nes", 
-            url: "none",
-            driveLink: "none" // Add Google Drive link here to show as inactive
+            url: "https://superjoe9999.github.io/nes-emulator-/",
+            githubLink: "none"
         },
         { 
             name: "SNES", 
             year: "1990", 
             type: "snes", 
             url: "https://superjoe9999.github.io/Snes-emulator-html/",
-            driveLink: "none"
+            githubLink: "none"
         },
         { 
             name: "N64", 
             year: "1996", 
             type: "n64", 
             url: "none",
-            driveLink: "none" // Add Google Drive link here to show as inactive
+            githubLink: "none" // Add GitHub link here to show as inactive
         },
         { 
             name: "GameCube", 
             year: "2001", 
             type: "gamecube", 
             url: "none",
-            driveLink: "none" // Add Google Drive link here to show as inactive
+            githubLink: "none" // Add GitHub link here to show as inactive
         },
         { 
             name: "Game Boy Color", 
             year: "1998", 
             type: "gbc", 
             url: "https://superjoe9999.github.io/Gameboy-color-emulator-/",
-            driveLink: "none"
+            githubLink: "none"
         },
         { 
             name: "GBA", 
             year: "2001", 
             type: "gba", 
             url: "https://superjoe9999.github.io/gbahost/",
-            driveLink: "none"
+            githubLink: "none"
         },
         { 
             name: "Nintendo DS", 
             year: "2004", 
             type: "ds", 
             url: "none",
-            driveLink: "none" // Add Google Drive link here to show as inactive
+            githubLink: "none" // Add GitHub link here to show as inactive
         },
         
         // Sony Systems
@@ -559,14 +559,14 @@
             year: "1994", 
             type: "ps1", 
             url: "none",
-            driveLink: "none" // Add Google Drive link here to show as inactive
+            githubLink: "none" // Add GitHub link here to show as inactive
         },
         { 
             name: "PS2", 
             year: "2000", 
             type: "ps2", 
             url: "none",
-            driveLink: "none" // Add Google Drive link here to show as inactive
+            githubLink: "none" // Add GitHub link here to show as inactive
         },
         
         // Microsoft Systems
@@ -575,14 +575,14 @@
             year: "2001", 
             type: "xbox", 
             url: "none",
-            driveLink: "none" // Add Google Drive link here to show as inactive
+            githubLink: "none" // Add GitHub link here to show as inactive
         },
         { 
             name: "Xbox 360", 
             year: "2005", 
             type: "xbox360", 
             url: "none",
-            driveLink: "none" // Add Google Drive link here to show as inactive
+            githubLink: "none" // Add GitHub link here to show as inactive
         },
         
         // Sega Systems
@@ -591,14 +591,14 @@
             year: "1988", 
             type: "genesis", 
             url: "none",
-            driveLink: "none" // Add Google Drive link here to show as inactive
+            githubLink: "none" // Add GitHub link here to show as inactive
         },
         { 
             name: "Dreamcast", 
             year: "1998", 
             type: "dreamcast", 
             url: "none",
-            driveLink: "none" // Add Google Drive link here to show as inactive
+            githubLink: "none" // Add GitHub link here to show as inactive
         },
         
         // Atari
@@ -607,26 +607,26 @@
             year: "1977", 
             type: "atari", 
             url: "none",
-            driveLink: "none" // Add Google Drive link here to show as inactive
+            githubLink: "none" // Add GitHub link here to show as inactive
         }
     ];
 
     const nexus = document.getElementById('nexus');
 
     consoles.forEach(c => {
-        // Only show consoles that have either a URL or a Google Drive link
-        if(c.url === "none" && c.driveLink === "none") return;
+        // Only show consoles that have either a URL or a GitHub link
+        if(c.url === "none" && c.githubLink === "none") return;
         
         const card = document.createElement('div');
         const isActive = c.url !== "none";
-        const hasContent = isActive || c.driveLink !== "none";
+        const hasContent = isActive || c.githubLink !== "none";
         
         card.className = isActive ? 'card active' : 'card inactive';
         
         if(isActive) {
             card.onclick = () => window.open(c.url, '_blank');
-        } else if(c.driveLink !== "none") {
-            card.onclick = () => window.open(c.driveLink, '_blank');
+        } else if(c.githubLink !== "none") {
+            card.onclick = () => window.open(c.githubLink, '_blank');
         }
         
         let artHtml = '';
@@ -708,7 +708,7 @@
             <div class="year">${c.year}</div>
             ${isActive ? 
                 '<div class="launch-label">INITIATING BOOT SEQUENCE...</div>' : 
-                '<div class="inactive-label">ROM LIBRARY ACCESS</div>'}
+                '<div class="inactive-label">REPOSITORY ACCESS</div>'}
         `;
         nexus.appendChild(card);
     });
