@@ -10,9 +10,6 @@
             --bg: #050508;
             --panel: rgba(15, 15, 20, 0.9);
             --accent: #00f2ff;
-            --snes-grey: #d1d1e0;
-            --snes-purple: #7a7ab8;
-            --snes-dark-purple: #515191;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -30,7 +27,7 @@
             padding: 60px 20px;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; }
+        .container { max-width: 1400px; margin: 0 auto; }
 
         header {
             text-align: center;
@@ -86,17 +83,30 @@
             padding: 50px 30px;
             text-align: center;
             transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-            cursor: pointer;
             position: relative;
         }
 
-        .card:hover {
+        .card.active {
+            cursor: pointer;
+        }
+
+        .card.active:hover {
             transform: translateY(-20px);
             border-color: var(--accent);
             box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 30px rgba(0, 242, 255, 0.1);
         }
 
-        /* --- SNES CONTROLLER ART --- */
+        .card.inactive {
+            opacity: 0.4;
+            cursor: pointer;
+        }
+
+        .card.inactive:hover {
+            opacity: 0.6;
+            transform: translateY(-10px);
+        }
+
+        /* --- ART STAGE --- */
         .art-stage {
             height: 160px;
             margin-bottom: 40px;
@@ -105,15 +115,36 @@
             align-items: center;
         }
 
+        /* === NES === */
+        .nes-console {
+            width: 130px; height: 85px;
+            background: linear-gradient(135deg, #b8b8b8 0%, #d8d8d8 100%);
+            border-radius: 4px;
+            position: relative;
+            box-shadow: 0 8px 0 #888, inset 0 -4px 0 rgba(0,0,0,0.15);
+        }
+        .nes-console::before {
+            content: ''; position: absolute; top: 15px; left: 15px;
+            width: 60px; height: 8px;
+            background: #1a1a1a;
+            border-radius: 2px;
+        }
+        .nes-console::after {
+            content: ''; position: absolute; bottom: 15px; right: 15px;
+            width: 35px; height: 35px;
+            background: #e60012;
+            border: 3px solid #1a1a1a;
+            border-radius: 2px;
+        }
+
+        /* === SNES === */
         .snes-controller {
             width: 150px; height: 70px;
-            background: var(--snes-grey);
-            border-radius: 35px; /* Pill shape */
+            background: linear-gradient(135deg, #c1c1d0 0%, #d8d8e5 100%);
+            border-radius: 35px;
             position: relative;
             box-shadow: 0 8px 0 #999, inset 0 -4px 0 rgba(0,0,0,0.1);
         }
-
-        /* D-Pad */
         .snes-controller::before {
             content: ''; position: absolute; top: 22px; left: 20px;
             width: 26px; height: 26px;
@@ -122,25 +153,20 @@
                 linear-gradient(transparent 38%, #444 38%, #444 62%, transparent 62%);
             border-radius: 2px;
         }
-
-        /* Buttons (Diamond Layout) */
         .buttons-group {
             position: absolute; right: 20px; top: 15px;
             width: 40px; height: 40px;
-            background: #bbb; border-radius: 50%; /* Indent area */
+            background: #bbb; border-radius: 50%;
         }
-
         .btn {
             position: absolute; width: 12px; height: 12px;
-            border-radius: 50%; background: var(--snes-purple);
-            box-shadow: 0 2px 0 var(--snes-dark-purple);
+            border-radius: 50%; background: #7a7ab8;
+            box-shadow: 0 2px 0 #515191;
         }
         .btn.top { top: 2px; left: 14px; }
         .btn.bottom { bottom: 2px; left: 14px; }
         .btn.left { top: 14px; left: 2px; }
         .btn.right { top: 14px; right: 2px; }
-
-        /* Start / Select */
         .center-btns {
             position: absolute; bottom: 18px; left: 50%;
             transform: translateX(-50%);
@@ -149,15 +175,291 @@
         }
         .pill { width: 12px; height: 4px; background: #888; border-radius: 10px; transform: rotate(-25deg); }
 
-        /* --- HANDHELD ART --- */
-        .gb-model {
-            width: 70px; height: 110px;
-            background: #4b0082; border-radius: 8px 8px 30px 8px;
+        /* === N64 === */
+        .n64-console {
+            width: 140px; height: 80px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border-radius: 8px;
             position: relative;
+            box-shadow: 0 8px 0 #0a0a0a, inset 0 -4px 0 rgba(255,255,255,0.05);
         }
-        .gb-model::after {
-            content: ''; position: absolute; top: 10px; left: 10px;
-            width: 50px; height: 45px; background: #2d4a2e; border: 3px solid #111;
+        .n64-console::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, #e60012 0%, #ff2a2a 100%);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+        .n64-console::after {
+            content: 'N64'; position: absolute; bottom: 8px; right: 12px;
+            font-size: 10px; font-weight: bold; color: #666;
+        }
+
+        /* === GAMECUBE === */
+        .gamecube-console {
+            width: 90px; height: 90px;
+            background: linear-gradient(135deg, #6b46c1 0%, #8b5cf6 100%);
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 8px 0 #4c1d95, inset 0 -4px 0 rgba(0,0,0,0.2);
+        }
+        .gamecube-console::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px; height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+        .gamecube-console::after {
+            content: ''; position: absolute; top: 10px; right: 10px;
+            width: 12px; height: 12px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        /* === GAME BOY COLOR === */
+        .gbc-model {
+            width: 80px; height: 120px;
+            background: linear-gradient(135deg, #6b46c1 0%, #8b5cf6 100%);
+            border-radius: 12px 12px 40px 12px;
+            position: relative;
+            box-shadow: 0 8px 0 #4c1d95, inset 0 -4px 0 rgba(0,0,0,0.2);
+        }
+        .gbc-model::before {
+            content: ''; position: absolute; top: 15px; left: 10px;
+            width: 60px; height: 50px; 
+            background: linear-gradient(135deg, #1e3a1e 0%, #2d4a2e 100%);
+            border: 3px solid #1a1a1a;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+        }
+        .gbc-model::after {
+            content: ''; position: absolute; bottom: 35px; left: 15px;
+            width: 22px; height: 22px;
+            background: 
+                linear-gradient(90deg, transparent 40%, #2a2a2a 40%, #2a2a2a 60%, transparent 60%),
+                linear-gradient(transparent 40%, #2a2a2a 40%, #2a2a2a 60%, transparent 60%);
+            border-radius: 2px;
+        }
+        .gbc-buttons {
+            position: absolute; bottom: 38px; right: 18px;
+        }
+        .gbc-btn {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: #dc2626; position: absolute;
+            box-shadow: 0 2px 0 #991b1b;
+        }
+        .gbc-btn.a { top: 0; left: 8px; }
+        .gbc-btn.b { top: 8px; left: 0; }
+
+        /* === GAME BOY ADVANCE === */
+        .gba-model {
+            width: 100px; height: 70px;
+            background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 6px 0 #5b21b6, inset 0 -3px 0 rgba(0,0,0,0.2);
+        }
+        .gba-model::before {
+            content: ''; position: absolute; top: 8px; left: 15px;
+            width: 55px; height: 38px;
+            background: linear-gradient(135deg, #1e3a1e 0%, #2d4a2e 100%);
+            border: 2px solid #1a1a1a;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+        }
+        .gba-model::after {
+            content: ''; position: absolute; top: 50px; left: 10px;
+            width: 18px; height: 18px;
+            background: 
+                linear-gradient(90deg, transparent 40%, #2a2a2a 40%, #2a2a2a 60%, transparent 60%),
+                linear-gradient(transparent 40%, #2a2a2a 40%, #2a2a2a 60%, transparent 60%);
+            border-radius: 2px;
+        }
+        .gba-buttons {
+            position: absolute; top: 45px; right: 12px;
+        }
+        .gba-btn {
+            width: 12px; height: 12px; border-radius: 50%;
+            background: #dc2626; position: absolute;
+            box-shadow: 0 2px 0 #991b1b;
+        }
+        .gba-btn.a { top: 3px; left: 10px; }
+        .gba-btn.b { top: 0; left: 0; }
+        .gba-shoulder {
+            position: absolute; top: 2px; 
+            width: 20px; height: 6px;
+            background: #6b21a8; border-radius: 3px;
+            box-shadow: 0 2px 0 #4c1d95;
+        }
+        .gba-shoulder.left { left: 5px; }
+        .gba-shoulder.right { right: 5px; }
+
+        /* === NINTENDO DS === */
+        .ds-model {
+            width: 90px; height: 110px;
+            background: linear-gradient(135deg, #d1d5db 0%, #f3f4f6 100%);
+            border-radius: 8px 8px 12px 12px;
+            position: relative;
+            box-shadow: 0 6px 0 #9ca3af;
+        }
+        .ds-model::before {
+            content: ''; position: absolute; top: 8px; left: 10px;
+            width: 70px; height: 40px;
+            background: linear-gradient(135deg, #1e3a1e 0%, #2d4a2e 100%);
+            border: 2px solid #1a1a1a;
+        }
+        .ds-model::after {
+            content: ''; position: absolute; bottom: 8px; left: 10px;
+            width: 70px; height: 40px;
+            background: linear-gradient(135deg, #e8f4e8 0%, #f0f8f0 100%);
+            border: 2px solid #d1d1d1;
+        }
+
+        /* === PLAYSTATION === */
+        .ps1-console {
+            width: 120px; height: 90px;
+            background: linear-gradient(135deg, #8b9dc3 0%, #a8bbd8 100%);
+            border-radius: 4px;
+            position: relative;
+            box-shadow: 0 8px 0 #5a6d8f;
+        }
+        .ps1-console::before {
+            content: 'PlayStation';
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px; font-weight: bold;
+            color: rgba(0,0,0,0.3);
+        }
+        .ps1-console::after {
+            content: ''; position: absolute; top: 10px; right: 10px;
+            width: 15px; height: 15px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        /* === PS2 === */
+        .ps2-console {
+            width: 110px; height: 90px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border-radius: 4px;
+            position: relative;
+            box-shadow: 0 8px 0 #0a0a0a;
+        }
+        .ps2-console::before {
+            content: 'PS2';
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px; font-weight: bold;
+            color: rgba(59, 130, 246, 0.4);
+        }
+        .ps2-console::after {
+            content: ''; position: absolute; bottom: 12px; right: 12px;
+            width: 25px; height: 3px;
+            background: #3b82f6;
+        }
+
+        /* === XBOX === */
+        .xbox-console {
+            width: 120px; height: 95px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 8px 0 #0a0a0a;
+        }
+        .xbox-console::before {
+            content: 'X';
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 50px; font-weight: bold;
+            color: rgba(34, 197, 94, 0.3);
+        }
+        .xbox-console::after {
+            content: ''; position: absolute; top: 15px; left: 15px;
+            width: 12px; height: 12px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        /* === XBOX 360 === */
+        .xbox360-console {
+            width: 100px; height: 100px;
+            background: linear-gradient(135deg, #e8e8e8 0%, #f8f8f8 100%);
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 8px 0 #c8c8c8;
+        }
+        .xbox360-console::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px; height: 50px;
+            border: 5px solid #22c55e;
+            border-radius: 50%;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+        }
+
+        /* === GENESIS === */
+        .genesis-console {
+            width: 130px; height: 75px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border-radius: 4px;
+            position: relative;
+            box-shadow: 0 8px 0 #0a0a0a;
+        }
+        .genesis-console::before {
+            content: ''; position: absolute; top: 15px; left: 0; right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, transparent 0%, #ff0000 20%, #ff0000 80%, transparent 100%);
+        }
+        .genesis-console::after {
+            content: '16-BIT';
+            position: absolute; bottom: 12px; right: 15px;
+            font-size: 9px; font-weight: bold;
+            color: #666;
+        }
+
+        /* === DREAMCAST === */
+        .dreamcast-console {
+            width: 95px; height: 95px;
+            background: linear-gradient(135deg, #e8e8e8 0%, #ffffff 100%);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 8px 0 #c8c8c8, inset 0 -4px 8px rgba(0,0,0,0.1);
+        }
+        .dreamcast-console::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 65px; height: 65px;
+            border: 3px solid #d1d1d1;
+            border-radius: 50%;
+        }
+        .dreamcast-console::after {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px; height: 20px;
+            background: #ff6600;
+            border-radius: 50%;
+        }
+
+        /* === ATARI 2600 === */
+        .atari-console {
+            width: 130px; height: 70px;
+            background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);
+            border-radius: 6px;
+            position: relative;
+            box-shadow: 0 8px 0 #654321;
+        }
+        .atari-console::before {
+            content: ''; position: absolute; top: 25%; left: 10%;
+            width: 80%; height: 30%;
+            background: linear-gradient(90deg, #2a2a2a 0%, #3a3a3a 100%);
+            border-radius: 3px;
+        }
+        .atari-console::after {
+            content: 'ATARI';
+            position: absolute; top: 8px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px; font-weight: bold;
+            color: rgba(255,255,255,0.3);
         }
 
         /* INFO */
@@ -172,7 +474,18 @@
             transition: 0.3s;
             letter-spacing: 3px;
         }
-        .card:hover .launch-label { opacity: 1; }
+        .card.active:hover .launch-label { opacity: 1; }
+
+        .inactive-label {
+            margin-top: 30px;
+            font-size: 0.65rem;
+            color: #555;
+            letter-spacing: 2px;
+            opacity: 0;
+            transition: 0.3s;
+        }
+        
+        .card.inactive:hover .inactive-label { opacity: 1; }
 
     </style>
 </head>
@@ -188,38 +501,141 @@
 </div>
 
 <script>
-    // Configuration from your source file
     const consoles = [
+        // Nintendo Systems
+        { 
+            name: "NES", 
+            year: "1983", 
+            type: "nes", 
+            url: "none",
+            driveLink: "none" // Add Google Drive link here to show as inactive
+        },
         { 
             name: "SNES", 
             year: "1990", 
-            type: "controller", 
-            url: "https://superjoe9999.github.io/Snes-emulator-html/" 
+            type: "snes", 
+            url: "https://superjoe9999.github.io/Snes-emulator-html/",
+            driveLink: "none"
+        },
+        { 
+            name: "N64", 
+            year: "1996", 
+            type: "n64", 
+            url: "none",
+            driveLink: "none" // Add Google Drive link here to show as inactive
+        },
+        { 
+            name: "GameCube", 
+            year: "2001", 
+            type: "gamecube", 
+            url: "none",
+            driveLink: "none" // Add Google Drive link here to show as inactive
         },
         { 
             name: "Game Boy Color", 
             year: "1998", 
-            type: "handheld", 
-            url: "https://superjoe9999.github.io/Gameboy-color-emulator-/" 
+            type: "gbc", 
+            url: "https://superjoe9999.github.io/Gameboy-color-emulator-/",
+            driveLink: "none"
         },
         { 
             name: "GBA", 
             year: "2001", 
-            type: "handheld", 
-            url: "https://superjoe9999.github.io/gbahost/" 
+            type: "gba", 
+            url: "https://superjoe9999.github.io/gbahost/",
+            driveLink: "none"
+        },
+        { 
+            name: "Nintendo DS", 
+            year: "2004", 
+            type: "ds", 
+            url: "none",
+            driveLink: "none" // Add Google Drive link here to show as inactive
+        },
+        
+        // Sony Systems
+        { 
+            name: "PlayStation", 
+            year: "1994", 
+            type: "ps1", 
+            url: "none",
+            driveLink: "none" // Add Google Drive link here to show as inactive
+        },
+        { 
+            name: "PS2", 
+            year: "2000", 
+            type: "ps2", 
+            url: "none",
+            driveLink: "none" // Add Google Drive link here to show as inactive
+        },
+        
+        // Microsoft Systems
+        { 
+            name: "Xbox", 
+            year: "2001", 
+            type: "xbox", 
+            url: "none",
+            driveLink: "none" // Add Google Drive link here to show as inactive
+        },
+        { 
+            name: "Xbox 360", 
+            year: "2005", 
+            type: "xbox360", 
+            url: "none",
+            driveLink: "none" // Add Google Drive link here to show as inactive
+        },
+        
+        // Sega Systems
+        { 
+            name: "Genesis", 
+            year: "1988", 
+            type: "genesis", 
+            url: "none",
+            driveLink: "none" // Add Google Drive link here to show as inactive
+        },
+        { 
+            name: "Dreamcast", 
+            year: "1998", 
+            type: "dreamcast", 
+            url: "none",
+            driveLink: "none" // Add Google Drive link here to show as inactive
+        },
+        
+        // Atari
+        { 
+            name: "Atari 2600", 
+            year: "1977", 
+            type: "atari", 
+            url: "none",
+            driveLink: "none" // Add Google Drive link here to show as inactive
         }
     ];
 
     const nexus = document.getElementById('nexus');
 
     consoles.forEach(c => {
-        if(c.url !== "none") {
-            const card = document.createElement('div');
-            card.className = 'card';
+        // Only show consoles that have either a URL or a Google Drive link
+        if(c.url === "none" && c.driveLink === "none") return;
+        
+        const card = document.createElement('div');
+        const isActive = c.url !== "none";
+        const hasContent = isActive || c.driveLink !== "none";
+        
+        card.className = isActive ? 'card active' : 'card inactive';
+        
+        if(isActive) {
             card.onclick = () => window.open(c.url, '_blank');
-            
-            let artHtml = '';
-            if(c.type === 'controller') {
+        } else if(c.driveLink !== "none") {
+            card.onclick = () => window.open(c.driveLink, '_blank');
+        }
+        
+        let artHtml = '';
+        
+        switch(c.type) {
+            case 'nes':
+                artHtml = `<div class="nes-console"></div>`;
+                break;
+            case 'snes':
                 artHtml = `
                     <div class="snes-controller">
                         <div class="buttons-group">
@@ -233,18 +649,68 @@
                             <div class="pill"></div>
                         </div>
                     </div>`;
-            } else {
-                artHtml = `<div class="gb-model"></div>`;
-            }
-
-            card.innerHTML = `
-                <div class="art-stage">${artHtml}</div>
-                <div class="name">${c.name}</div>
-                <div class="year">${c.year}</div>
-                <div class="launch-label">INITIATING BOOT SEQUENCE...</div>
-            `;
-            nexus.appendChild(card);
+                break;
+            case 'n64':
+                artHtml = `<div class="n64-console"></div>`;
+                break;
+            case 'gamecube':
+                artHtml = `<div class="gamecube-console"></div>`;
+                break;
+            case 'gbc':
+                artHtml = `
+                    <div class="gbc-model">
+                        <div class="gbc-buttons">
+                            <div class="gbc-btn a"></div>
+                            <div class="gbc-btn b"></div>
+                        </div>
+                    </div>`;
+                break;
+            case 'gba':
+                artHtml = `
+                    <div class="gba-model">
+                        <div class="gba-shoulder left"></div>
+                        <div class="gba-shoulder right"></div>
+                        <div class="gba-buttons">
+                            <div class="gba-btn a"></div>
+                            <div class="gba-btn b"></div>
+                        </div>
+                    </div>`;
+                break;
+            case 'ds':
+                artHtml = `<div class="ds-model"></div>`;
+                break;
+            case 'ps1':
+                artHtml = `<div class="ps1-console"></div>`;
+                break;
+            case 'ps2':
+                artHtml = `<div class="ps2-console"></div>`;
+                break;
+            case 'xbox':
+                artHtml = `<div class="xbox-console"></div>`;
+                break;
+            case 'xbox360':
+                artHtml = `<div class="xbox360-console"></div>`;
+                break;
+            case 'genesis':
+                artHtml = `<div class="genesis-console"></div>`;
+                break;
+            case 'dreamcast':
+                artHtml = `<div class="dreamcast-console"></div>`;
+                break;
+            case 'atari':
+                artHtml = `<div class="atari-console"></div>`;
+                break;
         }
+
+        card.innerHTML = `
+            <div class="art-stage">${artHtml}</div>
+            <div class="name">${c.name}</div>
+            <div class="year">${c.year}</div>
+            ${isActive ? 
+                '<div class="launch-label">INITIATING BOOT SEQUENCE...</div>' : 
+                '<div class="inactive-label">ROM LIBRARY ACCESS</div>'}
+        `;
+        nexus.appendChild(card);
     });
 </script>
 
