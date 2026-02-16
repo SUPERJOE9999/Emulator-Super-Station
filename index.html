@@ -225,6 +225,63 @@
             text-transform: uppercase;
         }
 
+        /* === SUGGESTION BOX SECTION === */
+        .suggestion-section {
+            margin-top: 80px;
+            max-width: 800px;
+        }
+
+        .suggestion-card {
+            background: var(--panel);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 12px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .suggestion-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 242, 255, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .suggestion-card:hover::before {
+            left: 100%;
+        }
+
+        .suggestion-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(0, 242, 255, 0.6);
+            box-shadow: 0 15px 40px rgba(0, 242, 255, 0.2);
+        }
+
+        .suggestion-text {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.3rem;
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .suggestion-subtext {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -711,6 +768,13 @@
     </div>
 
     <div id="nexus" class="grid"></div>
+
+    <div class="suggestion-section">
+        <div class="suggestion-card" onclick="window.open('https://superjoe9999.github.io/suggestion-box/', '_blank')">
+            <div class="suggestion-text">SUGGESTION BOX</div>
+            <div class="suggestion-subtext">Share Your Ideas</div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -754,137 +818,27 @@
     });
 
     const consoles = [
-        // Nintendo Systems
-        { 
-            name: "NES", 
-            year: "1983", 
-            type: "nes", 
-            url: "https://superjoe9999.github.io/nes-emulator-/",
-            githubLink: "none"
-        },
-        { 
-            name: "SNES", 
-            year: "1990", 
-            type: "snes", 
-            url: "https://superjoe9999.github.io/Snes-emulator-html/",
-            githubLink: "none"
-        },
-        { 
-            name: "N64", 
-            year: "1996", 
-            type: "n64", 
-            url: "https://superjoe9999.github.io/N64-Emulator/",
-            githubLink: "none"
-        },
-        { 
-            name: "GameCube", 
-            year: "2001", 
-            type: "gamecube", 
-            url: "none",
-            githubLink: "none" // Add GitHub link here to show as inactive
-        },
-        { 
-            name: "Game Boy Color", 
-            year: "1998", 
-            type: "gbc", 
-            url: "https://superjoe9999.github.io/Gameboy-color-emulator-/",
-            githubLink: "none"
-        },
-        { 
-            name: "GBA", 
-            year: "2001", 
-            type: "gba", 
-            url: "https://superjoe9999.github.io/gbahost/",
-            githubLink: "none"
-        },
-        { 
-            name: "Nintendo DS", 
-            year: "2004", 
-            type: "ds", 
-            url: "none",
-            githubLink: "none" // Add GitHub link here to show as inactive
-        },
-        
-        // Sony Systems
-        { 
-            name: "PlayStation", 
-            year: "1994", 
-            type: "ps1", 
-            url: "none",
-            githubLink: "none" // Add GitHub link here to show as inactive
-        },
-        { 
-            name: "PS2", 
-            year: "2000", 
-            type: "ps2", 
-            url: "none",
-            githubLink: "none" // Add GitHub link here to show as inactive
-        },
-        
-        // Microsoft Systems
-        { 
-            name: "Xbox", 
-            year: "2001", 
-            type: "xbox", 
-            url: "none",
-            githubLink: "none" // Add GitHub link here to show as inactive
-        },
-        { 
-            name: "Xbox 360", 
-            year: "2005", 
-            type: "xbox360", 
-            url: "none",
-            githubLink: "none" // Add GitHub link here to show as inactive
-        },
-        
-        // Sega Systems
-        { 
-            name: "Genesis", 
-            year: "1988", 
-            type: "genesis", 
-            url: "https://superjoe9999.github.io/Sega-Genesis-Emulator-/",
-            githubLink: "none"
-        },
-        { 
-            name: "Dreamcast", 
-            year: "1998", 
-            type: "dreamcast", 
-            url: "none",
-            githubLink: "none" // Add GitHub link here to show as inactive
-        },
-        
-        // Atari
-        { 
-            name: "Atari 2600", 
-            year: "1977", 
-            type: "atari", 
-            url: "https://superjoe9999.github.io/Atari-2600-emulator-/",
-            githubLink: "none"
-        },
-        
-        // Atari 7200
-        { 
-            name: "Atari 7200", 
-            year: "1984", 
-            type: "atari7200", 
-            url: "https://superjoe9999.github.io/Atari-7200/",
-            githubLink: "none"
-        },
-        
-        // Sega Master System
-        { 
-            name: "Master System", 
-            year: "1985", 
-            type: "mastersystem", 
-            url: "https://superjoe9999.github.io/Sega-Master-System-Emulator-/",
-            githubLink: "none"
-        }
+        { name: "NES", year: "1983", type: "nes", url: "https://superjoe9999.github.io/nes-emulator-/", githubLink: "none" },
+        { name: "SNES", year: "1990", type: "snes", url: "https://superjoe9999.github.io/Snes-emulator-html/", githubLink: "none" },
+        { name: "N64", year: "1996", type: "n64", url: "https://superjoe9999.github.io/N64-Emulator/", githubLink: "none" },
+        { name: "GameCube", year: "2001", type: "gamecube", url: "none", githubLink: "none" },
+        { name: "Game Boy Color", year: "1998", type: "gbc", url: "https://superjoe9999.github.io/Gameboy-color-emulator-/", githubLink: "none" },
+        { name: "GBA", year: "2001", type: "gba", url: "https://superjoe9999.github.io/gbahost/", githubLink: "none" },
+        { name: "Nintendo DS", year: "2004", type: "ds", url: "none", githubLink: "none" },
+        { name: "PlayStation", year: "1994", type: "ps1", url: "none", githubLink: "none" },
+        { name: "PS2", year: "2000", type: "ps2", url: "none", githubLink: "none" },
+        { name: "Xbox", year: "2001", type: "xbox", url: "none", githubLink: "none" },
+        { name: "Xbox 360", year: "2005", type: "xbox360", url: "none", githubLink: "none" },
+        { name: "Genesis", year: "1988", type: "genesis", url: "https://superjoe9999.github.io/Sega-Genesis-Emulator-/", githubLink: "none" },
+        { name: "Dreamcast", year: "1998", type: "dreamcast", url: "none", githubLink: "none" },
+        { name: "Atari 2600", year: "1977", type: "atari", url: "https://superjoe9999.github.io/Atari-2600-emulator-/", githubLink: "none" },
+        { name: "Atari 7200", year: "1984", type: "atari7200", url: "https://superjoe9999.github.io/Atari-7200/", githubLink: "none" },
+        { name: "Master System", year: "1985", type: "mastersystem", url: "https://superjoe9999.github.io/Sega-Master-System-Emulator-/", githubLink: "none" }
     ];
 
     const nexus = document.getElementById('nexus');
 
     consoles.forEach(c => {
-        // Only show consoles that have either a URL or a GitHub link
         if(c.url === "none" && c.githubLink === "none") return;
         
         const card = document.createElement('div');
