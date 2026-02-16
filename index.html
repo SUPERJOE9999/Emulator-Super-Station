@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emulator Hub | Nexus v2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&family=Space+Grotesk:wght@500;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050508;
+            --panel: rgba(15, 15, 20, 0.9);
+            --accent: #00f2ff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(0, 242, 255, 0.05) 0%, transparent 80%),
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            padding: 60px 20px;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            letter-spacing: -3px;
+            background: linear-gradient(to bottom, #fff 50%, #444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+
+        .status-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: rgba(0, 242, 255, 0.05);
+            border: 1px solid var(--accent);
+            border-radius: 100px;
+            font-size: 0.7rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .pulse {
+            width: 6px; height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        /* === CHALLENGES SECTION === */
+        .challenges-section {
+            margin-bottom: 60px;
+        }
+
+        .challenges-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .challenges-title::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: blink 2s infinite;
+        }
+
+        .challenges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            max-width: 800px;
+        }
+
+        .challenge-card {
+            background: var(--panel);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .challenge-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 242, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .challenge-card:hover::before {
+            left: 100%;
+        }
+
+        .challenge-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px rgba(0, 242, 255, 0.2);
+        }
+
+        .challenge-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .challenge-desc {
+            font-size: 0.7rem;
+            color: #888;
+            line-height: 1.4;
+        }
+
+        .challenge-prizes {
+            font-size: 0.65rem;
+            color: #ffd700;
+            margin-top: 8px;
+            line-height: 1.5;
+            border-top: 1px solid rgba(255, 215, 0, 0.15);
+            padding-top: 8px;
+        }
+
+        .challenge-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 6px;
+            height: 6px;
+            background: #22c55e;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #22c55e;
+        }
+
+        /* === LEADERBOARD SECTION === */
+        .leaderboard-section {
+            margin-bottom: 60px;
+            max-width: 800px;
+        }
+
+        .leaderboard-card {
+            background: var(--panel);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .leaderboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .leaderboard-card:hover::before {
+            left: 100%;
+        }
+
+        .leaderboard-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255, 215, 0, 0.6);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.2);
+        }
+
+        .leaderboard-text {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.5rem;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .leaderboard-subtext {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* === SUGGESTION BOX SECTION === */
+        .suggestion-section {
+            margin-top: 80px;
+            max-width: 800px;
+        }
+
+        .suggestion-card {
+            background: var(--panel);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 12px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .suggestion-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 242, 255, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .suggestion-card:hover::before {
+            left: 100%;
+        }
+
+        .suggestion-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(0, 242, 255, 0.6);
+            box-shadow: 0 15px 40px rgba(0, 242, 255, 0.2);
+        }
+
+        .suggestion-text {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.3rem;
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .suggestion-subtext {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 40px;
+        }
+
+        /* --- THE CARD --- */
+        .card {
+            background: var(--panel);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 40px;
+            padding: 50px 30px;
+            text-align: center;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        .card.active {
+            cursor: pointer;
+        }
+
+        .card.active:hover {
+            transform: translateY(-20px);
+            border-color: var(--accent);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 30px rgba(0, 242, 255, 0.1);
+        }
+
+        .card.inactive {
+            opacity: 0.4;
+            cursor: pointer;
+        }
+
+        .card.inactive:hover {
+            opacity: 0.6;
+            transform: translateY(-10px);
+        }
+
+        /* --- ART STAGE --- */
+        .art-stage {
+            height: 160px;
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* === NES === */
+        .nes-console {
+            width: 130px; height: 85px;
+            background: linear-gradient(135deg, #b8b8b8 0%, #d8d8d8 100%);
+            border-radius: 4px;
+            position: relative;
+            box-shadow: 0 8px 0 #888, inset 0 -4px 0 rgba(0,0,0,0.15);
+        }
+        .nes-console::before {
+            content: ''; position: absolute; top: 15px; left: 15px;
+            width: 60px; height: 8px;
+            background: #1a1a1a;
+            border-radius: 2px;
+        }
+        .nes-console::after {
+            content: ''; position: absolute; bottom: 15px; right: 15px;
+            width: 35px; height: 35px;
+            background: #e60012;
+            border: 3px solid #1a1a1a;
+            border-radius: 2px;
+        }
+
+        /* === SNES === */
+        .snes-controller {
+            width: 150px; height: 70px;
+            background: linear-gradient(135deg, #c1c1d0 0%, #d8d8e5 100%);
+            border-radius: 35px;
+            position: relative;
+            box-shadow: 0 8px 0 #999, inset 0 -4px 0 rgba(0,0,0,0.1);
+        }
+        .snes-controller::before {
+            content: ''; position: absolute; top: 22px; left: 20px;
+            width: 26px; height: 26px;
+            background: 
+                linear-gradient(90deg, transparent 38%, #444 38%, #444 62%, transparent 62%),
+                linear-gradient(transparent 38%, #444 38%, #444 62%, transparent 62%);
+            border-radius: 2px;
+        }
+        .buttons-group {
+            position: absolute; right: 20px; top: 15px;
+            width: 40px; height: 40px;
+            background: #bbb; border-radius: 50%;
+        }
+        .btn {
+            position: absolute; width: 12px; height: 12px;
+            border-radius: 50%; background: #7a7ab8;
+            box-shadow: 0 2px 0 #515191;
+        }
+        .btn.top { top: 2px; left: 14px; }
+        .btn.bottom { bottom: 2px; left: 14px; }
+        .btn.left { top: 14px; left: 2px; }
+        .btn.right { top: 14px; right: 2px; }
+        .center-btns {
+            position: absolute; bottom: 18px; left: 50%;
+            transform: translateX(-50%);
+            width: 30px; height: 6px;
+            display: flex; gap: 8px;
+        }
+        .pill { width: 12px; height: 4px; background: #888; border-radius: 10px; transform: rotate(-25deg); }
+
+        /* === N64 === */
+        .n64-console {
+            width: 140px; height: 80px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 8px 0 #0a0a0a, inset 0 -4px 0 rgba(255,255,255,0.05);
+        }
+        .n64-console::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, #e60012 0%, #ff2a2a 100%);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+        }
+        .n64-console::after {
+            content: 'N64'; position: absolute; bottom: 8px; right: 12px;
+            font-size: 10px; font-weight: bold; color: #666;
+        }
+
+        /* === GAMECUBE === */
+        .gamecube-console {
+            width: 90px; height: 90px;
+            background: linear-gradient(135deg, #6b46c1 0%, #8b5cf6 100%);
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 8px 0 #4c1d95, inset 0 -4px 0 rgba(0,0,0,0.2);
+        }
+        .gamecube-console::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px; height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+        .gamecube-console::after {
+            content: ''; position: absolute; top: 10px; right: 10px;
+            width: 12px; height: 12px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        /* === GAME BOY COLOR === */
+        .gbc-model {
+            width: 80px; height: 120px;
+            background: linear-gradient(135deg, #6b46c1 0%, #8b5cf6 100%);
+            border-radius: 12px 12px 40px 12px;
+            position: relative;
+            box-shadow: 0 8px 0 #4c1d95, inset 0 -4px 0 rgba(0,0,0,0.2);
+        }
+        .gbc-model::before {
+            content: ''; position: absolute; top: 15px; left: 10px;
+            width: 60px; height: 50px; 
+            background: linear-gradient(135deg, #1e3a1e 0%, #2d4a2e 100%);
+            border: 3px solid #1a1a1a;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+        }
+        .gbc-model::after {
+            content: ''; position: absolute; bottom: 35px; left: 15px;
+            width: 22px; height: 22px;
+            background: 
+                linear-gradient(90deg, transparent 40%, #2a2a2a 40%, #2a2a2a 60%, transparent 60%),
+                linear-gradient(transparent 40%, #2a2a2a 40%, #2a2a2a 60%, transparent 60%);
+            border-radius: 2px;
+        }
+        .gbc-buttons {
+            position: absolute; bottom: 38px; right: 18px;
+        }
+        .gbc-btn {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: #dc2626; position: absolute;
+            box-shadow: 0 2px 0 #991b1b;
+        }
+        .gbc-btn.a { top: 0; left: 8px; }
+        .gbc-btn.b { top: 8px; left: 0; }
+
+        /* === GAME BOY ADVANCE === */
+        .gba-model {
+            width: 100px; height: 70px;
+            background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 6px 0 #5b21b6, inset 0 -3px 0 rgba(0,0,0,0.2);
+        }
+        .gba-model::before {
+            content: ''; position: absolute; top: 8px; left: 15px;
+            width: 55px; height: 38px;
+            background: linear-gradient(135deg, #1e3a1e 0%, #2d4a2e 100%);
+            border: 2px solid #1a1a1a;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+        }
+        .gba-model::after {
+            content: ''; position: absolute; top: 50px; left: 10px;
+            width: 18px; height: 18px;
+            background: 
+                linear-gradient(90deg, transparent 40%, #2a2a2a 40%, #2a2a2a 60%, transparent 60%),
+                linear-gradient(transparent 40%, #2a2a2a 40%, #2a2a2a 60%, transparent 60%);
+            border-radius: 2px;
+        }
+        .gba-buttons {
+            position: absolute; top: 45px; right: 12px;
+        }
+        .gba-btn {
+            width: 12px; height: 12px; border-radius: 50%;
+            background: #dc2626; position: absolute;
+            box-shadow: 0 2px 0 #991b1b;
+        }
+        .gba-btn.a { top: 3px; left: 10px; }
+        .gba-btn.b { top: 0; left: 0; }
+        .gba-shoulder {
+            position: absolute; top: 2px; 
+            width: 20px; height: 6px;
+            background: #6b21a8; border-radius: 3px;
+            box-shadow: 0 2px 0 #4c1d95;
+        }
+        .gba-shoulder.left { left: 5px; }
+        .gba-shoulder.right { right: 5px; }
+
+        /* === NINTENDO DS === */
+        .ds-model {
+            width: 90px; height: 110px;
+            background: linear-gradient(135deg, #d1d5db 0%, #f3f4f6 100%);
+            border-radius: 8px 8px 12px 12px;
+            position: relative;
+            box-shadow: 0 6px 0 #9ca3af;
+        }
+        .ds-model::before {
+            content: ''; position: absolute; top: 8px; left: 10px;
+            width: 70px; height: 40px;
+            background: linear-gradient(135deg, #1e3a1e 0%, #2d4a2e 100%);
+            border: 2px solid #1a1a1a;
+        }
+        .ds-model::after {
+            content: ''; position: absolute; bottom: 8px; left: 10px;
+            width: 70px; height: 40px;
+            background: linear-gradient(135deg, #e8f4e8 0%, #f0f8f0 100%);
+            border: 2px solid #d1d1d1;
+        }
+
+        /* === PLAYSTATION === */
+        .ps1-console {
+            width: 120px; height: 90px;
+            background: linear-gradient(135deg, #8b9dc3 0%, #a8bbd8 100%);
+            border-radius: 4px;
+            position: relative;
+            box-shadow: 0 8px 0 #5a6d8f;
+        }
+        .ps1-console::before {
+            content: 'PlayStation';
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px; font-weight: bold;
+            color: rgba(0,0,0,0.3);
+        }
+        .ps1-console::after {
+            content: ''; position: absolute; top: 10px; right: 10px;
+            width: 15px; height: 15px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        /* === PS2 === */
+        .ps2-console {
+            width: 110px; height: 90px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border-radius: 4px;
+            position: relative;
+            box-shadow: 0 8px 0 #0a0a0a;
+        }
+        .ps2-console::before {
+            content: 'PS2';
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px; font-weight: bold;
+            color: rgba(59, 130, 246, 0.4);
+        }
+        .ps2-console::after {
+            content: ''; position: absolute; bottom: 12px; right: 12px;
+            width: 25px; height: 3px;
+            background: #3b82f6;
+        }
+
+        /* === XBOX === */
+        .xbox-console {
+            width: 120px; height: 95px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 8px 0 #0a0a0a;
+        }
+        .xbox-console::before {
+            content: 'X';
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 50px; font-weight: bold;
+            color: rgba(34, 197, 94, 0.3);
+        }
+        .xbox-console::after {
+            content: ''; position: absolute; top: 15px; left: 15px;
+            width: 12px; height: 12px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        /* === XBOX 360 === */
+        .xbox360-console {
+            width: 100px; height: 100px;
+            background: linear-gradient(135deg, #e8e8e8 0%, #f8f8f8 100%);
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 8px 0 #c8c8c8;
+        }
+        .xbox360-console::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px; height: 50px;
+            border: 5px solid #22c55e;
+            border-radius: 50%;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+        }
+
+        /* === GENESIS === */
+        .genesis-console {
+            width: 130px; height: 75px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border-radius: 4px;
+            position: relative;
+            box-shadow: 0 8px 0 #0a0a0a;
+        }
+        .genesis-console::before {
+            content: ''; position: absolute; top: 15px; left: 0; right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, transparent 0%, #ff0000 20%, #ff0000 80%, transparent 100%);
+        }
+        .genesis-console::after {
+            content: '16-BIT';
+            position: absolute; bottom: 12px; right: 15px;
+            font-size: 9px; font-weight: bold;
+            color: #666;
+        }
+
+        /* === DREAMCAST === */
+        .dreamcast-console {
+            width: 95px; height: 95px;
+            background: linear-gradient(135deg, #e8e8e8 0%, #ffffff 100%);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 8px 0 #c8c8c8, inset 0 -4px 8px rgba(0,0,0,0.1);
+        }
+        .dreamcast-console::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 65px; height: 65px;
+            border: 3px solid #d1d1d1;
+            border-radius: 50%;
+        }
+        .dreamcast-console::after {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px; height: 20px;
+            background: #ff6600;
+            border-radius: 50%;
+        }
+
+        /* === ATARI 2600 === */
+        .atari-console {
+            width: 130px; height: 70px;
+            background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);
+            border-radius: 6px;
+            position: relative;
+            box-shadow: 0 8px 0 #654321;
+        }
+        .atari-console::before {
+            content: ''; position: absolute; top: 25%; left: 10%;
+            width: 80%; height: 30%;
+            background: linear-gradient(90deg, #2a2a2a 0%, #3a3a3a 100%);
+            border-radius: 3px;
+        }
+        .atari-console::after {
+            content: 'ATARI';
+            position: absolute; top: 8px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px; font-weight: bold;
+            color: rgba(255,255,255,0.3);
+        }
+
+        /* === ATARI 7200 === */
+        .atari7200-console {
+            width: 120px; height: 80px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border-radius: 6px;
+            position: relative;
+            box-shadow: 0 8px 0 #0a0a0a;
+        }
+        .atari7200-console::before {
+            content: ''; position: absolute; top: 30%; left: 15%;
+            width: 70%; height: 25%;
+            background: linear-gradient(90deg, #444 0%, #555 100%);
+            border-radius: 3px;
+        }
+        .atari7200-console::after {
+            content: '7200';
+            position: absolute; top: 10px; right: 12px;
+            font-size: 11px; font-weight: bold;
+            color: rgba(255,69,0,0.6);
+        }
+
+        /* === SEGA MASTER SYSTEM === */
+        .mastersystem-console {
+            width: 130px; height: 75px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border-radius: 4px;
+            position: relative;
+            box-shadow: 0 8px 0 #0a0a0a;
+        }
+        .mastersystem-console::before {
+            content: ''; position: absolute; top: 20px; left: 15px;
+            width: 20px; height: 35px;
+            background: #dc2626;
+            border-radius: 2px;
+            box-shadow: 2px 0 0 #991b1b;
+        }
+        .mastersystem-console::after {
+            content: 'MASTER SYSTEM';
+            position: absolute; bottom: 10px; right: 10px;
+            font-size: 7px; font-weight: bold;
+            color: #666;
+            letter-spacing: 1px;
+        }
+
+        /* === THE ROM VAULT === */
+        .romvault-icon {
+            width: 100px; height: 100px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .romvault-icon::before {
+            content: ''; 
+            position: absolute;
+            width: 55px; 
+            height: 80px;
+            background: linear-gradient(135deg, #c1c1d0 0%, #d8d8e5 100%);
+            border-radius: 4px 4px 8px 8px;
+            box-shadow: 
+                0 6px 0 #999,
+                inset 0 -3px 0 rgba(0,0,0,0.1),
+                0 0 30px rgba(0, 242, 255, 0.3);
+        }
+        .romvault-icon::after {
+            content: 'ROM';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px;
+            font-weight: bold;
+            color: #4c1d95;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+            z-index: 1;
+        }
+
+        /* INFO */
+        .name { font-size: 2rem; font-weight: 700; letter-spacing: -1px; margin-bottom: 8px; }
+        .year { font-size: 0.85rem; color: #555; text-transform: uppercase; letter-spacing: 2px; }
+
+        .launch-label {
+            margin-top: 30px;
+            font-size: 0.65rem;
+            color: var(--accent);
+            opacity: 0;
+            transition: 0.3s;
+            letter-spacing: 3px;
+        }
+        .card.active:hover .launch-label { opacity: 1; }
+
+        .inactive-label {
+            margin-top: 30px;
+            font-size: 0.65rem;
+            color: #555;
+            letter-spacing: 2px;
+            opacity: 0;
+            transition: 0.3s;
+        }
+        
+        .card.inactive:hover .inactive-label { opacity: 1; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="status-chip"><div class="pulse"></div> System Ready</div>
+        <h1>Emulator Hub</h1>
+    </header>
+
+    <div class="challenges-section">
+        <div class="challenges-title">Active Challenges</div>
+        <div class="challenges-grid" id="challenges"></div>
+    </div>
+
+    <div class="leaderboard-section">
+        <div class="leaderboard-card" onclick="window.open('https://superjoe9999.github.io/emulation-leaderboard/', '_blank')">
+            <div class="leaderboard-text">LEADER BOARD</div>
+            <div class="leaderboard-subtext">View Rankings</div>
+        </div>
+    </div>
+
+    <div id="nexus" class="grid"></div>
+
+    <div class="suggestion-section">
+        <div class="suggestion-card" onclick="window.open('https://superjoe9999.github.io/suggestion-box/', '_blank')">
+            <div class="suggestion-text">SUGGESTION BOX</div>
+            <div class="suggestion-subtext">Share Your Ideas</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Challenges
+    const challenges = [
+        {
+            name: "Pokemon Fire Red Challenge",
+            description: "Catch a specific set of Pokemon",
+            prizes: "🥇 Real life Pokemon plushie · 🥈 Random video game · 🥉 Random video game",
+            url: "https://superjoe9999.github.io/FIre-Red-For-Real-Real-Maybe-/"
+        },
+        {
+            name: "Pokemon Pinball Challenge",
+            description: "Get the highest score!",
+            prizes: "🥇 Pokemon Cards",
+            url: "https://superjoe9999.github.io/Pokemon-Pinball-/"
+        },
+        {
+            name: "Pokemon Stadium Challenge",
+            description: "Win 10 online Pokemon battles or 100% the Prime Cup in single player",
+            prizes: "🥇 Real life Pokeball · 🥈 Random video game · 🥉 Random video game",
+            url: "https://superjoe9999.github.io/Pokemon-stadium-lobby/"
+        }
+    ];
+
+    const challengesContainer = document.getElementById('challenges');
+
+    challenges.forEach(challenge => {
+        const card = document.createElement('div');
+        card.className = 'challenge-card';
+        card.onclick = () => window.open(challenge.url, '_blank');
+
+        card.innerHTML = `
+            <div class="challenge-status"></div>
+            <div class="challenge-name">${challenge.name}</div>
+            <div class="challenge-desc">${challenge.description}</div>
+            ${challenge.prizes ? `<div class="challenge-prizes">${challenge.prizes}</div>` : ''}
+        `;
+
+        challengesContainer.appendChild(card);
+    });
+
+    const consoles = [
+        { name: "NES", year: "1983", type: "nes", url: "https://superjoe9999.github.io/nes-emulator-/", githubLink: "none" },
+        { name: "SNES", year: "1990", type: "snes", url: "https://superjoe9999.github.io/Snes-emulator-html/", githubLink: "none" },
+        { name: "N64", year: "1996", type: "n64", url: "https://superjoe9999.github.io/N64-Emulator/", githubLink: "none" },
+        { name: "GameCube", year: "2001", type: "gamecube", url: "none", githubLink: "none" },
+        { name: "Game Boy Color", year: "1998", type: "gbc", url: "https://superjoe9999.github.io/Gameboy-color-emulator-/", githubLink: "none" },
+        { name: "GBA", year: "2001", type: "gba", url: "https://superjoe9999.github.io/gbahost/", githubLink: "none" },
+        { name: "Nintendo DS", year: "2004", type: "ds", url: "none", githubLink: "none" },
+        { name: "PlayStation", year: "1994", type: "ps1", url: "none", githubLink: "none" },
+        { name: "PS2", year: "2000", type: "ps2", url: "none", githubLink: "none" },
+        { name: "Xbox", year: "2001", type: "xbox", url: "none", githubLink: "none" },
+        { name: "Xbox 360", year: "2005", type: "xbox360", url: "none", githubLink: "none" },
+        { name: "Genesis", year: "1988", type: "genesis", url: "https://superjoe9999.github.io/Sega-Genesis-Emulator-/", githubLink: "none" },
+        { name: "Dreamcast", year: "1998", type: "dreamcast", url: "none", githubLink: "none" },
+        { name: "Atari 2600", year: "1977", type: "atari", url: "https://superjoe9999.github.io/Atari-2600-emulator-/", githubLink: "none" },
+        { name: "Atari 7200", year: "1984", type: "atari7200", url: "https://superjoe9999.github.io/Atari-7200/", githubLink: "none" },
+        { name: "Master System", year: "1985", type: "mastersystem", url: "https://superjoe9999.github.io/Sega-Master-System-Emulator-/", githubLink: "none" },
+        { name: "The Rom Vault", year: "2026", type: "romvault", url: "https://superjoe9999.github.io/Rom-hack-viewer/", githubLink: "none" }
+    ];
+
+    const nexus = document.getElementById('nexus');
+
+    consoles.forEach(c => {
+        if(c.url === "none" && c.githubLink === "none") return;
+        
+        const card = document.createElement('div');
+        const isActive = c.url !== "none";
+        const hasContent = isActive || c.githubLink !== "none";
+        
+        card.className = isActive ? 'card active' : 'card inactive';
+        
+        if(isActive) {
+            card.onclick = () => window.open(c.url, '_blank');
+        } else if(c.githubLink !== "none") {
+            card.onclick = () => window.open(c.githubLink, '_blank');
+        }
+        
+        let artHtml = '';
+        
+        switch(c.type) {
+            case 'nes':
+                artHtml = `<div class="nes-console"></div>`;
+                break;
+            case 'snes':
+                artHtml = `
+                    <div class="snes-controller">
+                        <div class="buttons-group">
+                            <div class="btn top"></div>
+                            <div class="btn bottom"></div>
+                            <div class="btn left"></div>
+                            <div class="btn right"></div>
+                        </div>
+                        <div class="center-btns">
+                            <div class="pill"></div>
+                            <div class="pill"></div>
+                        </div>
+                    </div>`;
+                break;
+            case 'n64':
+                artHtml = `<div class="n64-console"></div>`;
+                break;
+            case 'gamecube':
+                artHtml = `<div class="gamecube-console"></div>`;
+                break;
+            case 'gbc':
+                artHtml = `
+                    <div class="gbc-model">
+                        <div class="gbc-buttons">
+                            <div class="gbc-btn a"></div>
+                            <div class="gbc-btn b"></div>
+                        </div>
+                    </div>`;
+                break;
+            case 'gba':
+                artHtml = `
+                    <div class="gba-model">
+                        <div class="gba-shoulder left"></div>
+                        <div class="gba-shoulder right"></div>
+                        <div class="gba-buttons">
+                            <div class="gba-btn a"></div>
+                            <div class="gba-btn b"></div>
+                        </div>
+                    </div>`;
+                break;
+            case 'ds':
+                artHtml = `<div class="ds-model"></div>`;
+                break;
+            case 'ps1':
+                artHtml = `<div class="ps1-console"></div>`;
+                break;
+            case 'ps2':
+                artHtml = `<div class="ps2-console"></div>`;
+                break;
+            case 'xbox':
+                artHtml = `<div class="xbox-console"></div>`;
+                break;
+            case 'xbox360':
+                artHtml = `<div class="xbox360-console"></div>`;
+                break;
+            case 'genesis':
+                artHtml = `<div class="genesis-console"></div>`;
+                break;
+            case 'dreamcast':
+                artHtml = `<div class="dreamcast-console"></div>`;
+                break;
+            case 'atari':
+                artHtml = `<div class="atari-console"></div>`;
+                break;
+            case 'atari7200':
+                artHtml = `<div class="atari7200-console"></div>`;
+                break;
+            case 'mastersystem':
+                artHtml = `<div class="mastersystem-console"></div>`;
+                break;
+            case 'romvault':
+                artHtml = `<div class="romvault-icon"></div>`;
+                break;
+        }
+
+        card.innerHTML = `
+            <div class="art-stage">${artHtml}</div>
+            <div class="name">${c.name}</div>
+            <div class="year">${c.year}</div>
+            ${isActive ? 
+                '<div class="launch-label">INITIATING BOOT SEQUENCE...</div>' : 
+                '<div class="inactive-label">REPOSITORY ACCESS</div>'}
+        `;
+        nexus.appendChild(card);
+    });
+</script>
+
+</body>
+</html>
